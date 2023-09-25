@@ -1,5 +1,7 @@
-# Deformable Temporal Convolutional Networks (DTCN)
-This repository  provides training and evalution scripts for the DTCN speech separation model described in the paper "Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation" - https://arxiv.org/pdf/2210.15305.pdf.
+# PubSep
+This repository provides training and evalution scripts for the DNN speech separation models described in various papers 
+ * "Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation" - https://arxiv.org/pdf/2210.15305.pdf.
+ * "On Time-Domain Conformer Models for Noisy Reverberant Speech Separation" - [Link to be added]
 
 As baseline TCN schema is also provided along with tools for estimating computational efficiency.
 
@@ -11,9 +13,11 @@ This recipe is a fork of the WHAMandWHAMR recipe in the SpeechBrain library (req
 Data:
  * WHAMR
  * WSJ0-2Mix
+ * LibriMix (tbd)
 
 Models:
- * Deformable Temporal Convolutional Networks
+ * Time-Domain Conformers (TD-Conformer) (tbd)
+ * Deformable Temporal Convolutional Networks (DTCN)
  * Temporal Convolutional Networks (Conv-TasNet without skip connections)
 
 # Running basic script
@@ -40,18 +44,25 @@ replacing ```NGPU``` with the desired number of GPUs to use.
 In order to use dynamic mixing you will also need to change the ```base_folder_dm``` and ```rir_path``` hyperparameters, refer to https://github.com/speechbrain/speechbrain/blob/develop/recipes/WHAMandWHAMR/separation/README.md for more info on setting up dynamic mixing in SpeechBrain recipes.
 
 # Known issues
- * The main issue at present is mixed precision training with ```autocast``` enabled. The reason for this is unknown. At present we do not recommend trying to use this functionality.
+ * The main issue at present is mixed precision training for DTCN with ```autocast``` enabled. We do not recommend trying to use this functionality at present.
 
 # Paper
-Please cite the following paper if you make use of any of this codebase:
+Please cite the following papers if you make use of the respective part of this codebase:
 ```
 @INPROCEEDINGS{dtcn23,
   author={Ravenscroft, William and Goetze, Stefan and Hain, Thomas},
   booktitle={ICASSP 2023 - 2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
-  title={Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation}, 
+  title={Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation},
+  month={June}
   year={2023},
   volume={},
   number={},
   pages={1-5},
   doi={10.1109/ICASSP49357.2023.10095230}}
+@INPROCEEDINGS{tdconformer23,
+  author={Ravenscroft, William and Goetze, Stefan and Hain, Thomas},
+  booktitle={Workshop on Automatic Speech Recognition and Understanding 2023 (ASRU 2023)}, 
+  title={On Time-Domain Conformers for Monaural Noisy Reverberant Speech Separation}, 
+  month={Dec}
+  year={2023}}
 ```

@@ -1,4 +1,4 @@
-# PubSep
+# PubSep [under construction]
 This repository provides training and evalution scripts for the DNN speech separation models described in various papers 
  * "Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation" - https://arxiv.org/pdf/2210.15305.pdf.
  * "On Time-Domain Conformer Models for Noisy Reverberant Speech Separation" - [Link to be added]
@@ -13,10 +13,10 @@ This recipe is a fork of the WHAMandWHAMR recipe in the SpeechBrain library (req
 Data:
  * WHAMR
  * WSJ0-2Mix
- * LibriMix (tbd)
+ * LibriMix (WIP)
 
 Models:
- * Time-Domain Conformers (TD-Conformer) (tbd)
+ * Time-Domain Conformers (TD-Conformer) (WIP)
  * Deformable Temporal Convolutional Networks (DTCN)
  * Temporal Convolutional Networks (Conv-TasNet without skip connections)
 
@@ -49,6 +49,13 @@ In order to use dynamic mixing you will also need to change the ```base_folder_d
 # Paper
 Please cite the following papers if you make use of the respective part of this codebase:
 ```
+@INPROCEEDINGS{tdconformer23,
+  author={Ravenscroft, William and Goetze, Stefan and Hain, Thomas},
+  booktitle={Workshop on Automatic Speech Recognition and Understanding 2023 (ASRU 2023)}, 
+  title={On Time-Domain Conformers for Monaural Noisy Reverberant Speech Separation}, 
+  month={Dec}
+  year={2023}}
+
 @INPROCEEDINGS{dtcn23,
   author={Ravenscroft, William and Goetze, Stefan and Hain, Thomas},
   booktitle={ICASSP 2023 - 2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
@@ -59,10 +66,4 @@ Please cite the following papers if you make use of the respective part of this 
   number={},
   pages={1-5},
   doi={10.1109/ICASSP49357.2023.10095230}}
-@INPROCEEDINGS{tdconformer23,
-  author={Ravenscroft, William and Goetze, Stefan and Hain, Thomas},
-  booktitle={Workshop on Automatic Speech Recognition and Understanding 2023 (ASRU 2023)}, 
-  title={On Time-Domain Conformers for Monaural Noisy Reverberant Speech Separation}, 
-  month={Dec}
-  year={2023}}
 ```

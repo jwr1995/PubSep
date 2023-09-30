@@ -1,0 +1,177 @@
+# ################################
+# Model: convtasnet for source separation
+# https://arxiv.org/abs/2010.13154
+#
+# Dataset : WHAMR!
+# ################################
+# Basic parameters
+# Seed needs to be set at top of yaml, before objects with parameters are made
+#l
+seed: 1234
+__set_seed: !apply:torch.manual_seed [!ref <seed>]
+
+# Data params
+
+# the data folder for the wham dataset
+# data_folder needs to follow the format:  /yourpath/whamr.
+# make sure to use the name whamr at your top folder for the dataset!
+data_folder: /fastdata/acp19jwr/data/wsj0-2mix
+alternate_path: !ref <data_folder>
+mix_folder: mix_both_reverb
+mini: False # if true only uses a quarter of the wham/whamr data
+
+
+
+# the path for wsj0/si_tr_s/ folder -- only needed if dynamic mixing is used
+# e.g. /yourpath/wsj0-processed/si_tr_s/
+# you need to convert the original wsj0 to 8k
+# you can do this conversion with the script ../meta/preprocess_dynamic_mixing.py
+base_folder_dm: /fastdata/acp19jwr/data/wsj0/si_tr_s_processed
+
+experiment_name: !ref ks=<depthwise_conv_kernel_size>/conformer-XL
+experiment_folder: wsj0-2mix/conformer/S=1/dm
+output_folder: !ref results/<experiment_folder>/<experiment_name>/<seed>
+train_log: !ref <output_folder>/train_log.txt
+save_folder: !ref <output_folder>/save
+
+# the file names should start with whamr instead of whamorg
+train_data: !ref <save_folder>/wsj_tr.csv
+valid_data: !ref <save_folder>/wsj_cv.csv
+test_data: !ref <save_folder>/wsj_tt.csv
+skip_prep: False
+
+# Experiment params
+auto_mix_prec: True # Set it to True for mixed precision
+test_only: False
+num_spks: 2 # set to 3 for wsj0-3mix
+progressbar: True
+save_audio: False # Save estimated sources on disk
+sample_rate: 8000
+
+# Training parameters
+N_epochs: 250
+batch_size: 4
+lr: 0.00005
+clip_grad_norm: 5
+loss_upper_lim: 9999  # this is the upper limit for an acceptable loss
+# if True, the training sequences are cut to a specified length
+limit_training_signal_len: True
+# this is the length of sequences if we choose to limit
+# the signal length of training sequences
+training_signal_len: !ref 4 * <sample_rate>
+
+# Set it to True to dynamically create mixtures at training time
+dynamic_mixing: True
+
+# Parameters for data augmentation
+
+# rir_path variable points to the directory of the room impulse responses
+# e.g. /miniscratch/subakany/rir_wavs
+# If the path does not exist, it is created automatically.
+rir_path: !ref <data_folder>/rirs/tr
+
+use_wavedrop: False
+use_speedperturb: True
+use_speedperturb_sameforeachsource: False
+use_rand_shift: False
+min_shift: -8000
+max_shift: 8000
+
+speedperturb: !new:speechbrain.lobes.augment.TimeDomainSpecAugment
+    perturb_prob: 1.0
+    drop_freq_prob: 0.0
+    drop_chunk_prob: 0.0
+    sample_rate: !ref <sample_rate>
+    speeds: [95, 100, 105]
+
+wavedrop: !new:speechbrain.lobes.augment.TimeDomainSpecAugment
+    perturb_prob: 0.0
+    drop_freq_prob: 1.0
+    drop_chunk_prob: 1.0
+    sample_rate: !ref <sample_rate>
+
+# loss thresholding -- this thresholds the training loss
+threshold_byloss: True
+threshold: -30
+
+# Encoder parameters
+N_encoder_out: 256
+kernel_size: 16
+kernel_stride: 8
+
+# Dataloader options
+dataloader_opts:
+    batch_size: !ref <batch_size>
+    num_workers: 4
+
+# Dataloader options
+test_dataloader_opts:
+    batch_size: 1
+    num_workers: 4
+
+# Specifying the network
+Encoder: !new:speechbrain.lobes.models.dual_path.Encoder
+    kernel_size: !ref <kernel_size>
+    out_channels: !ref <N_encoder_out>
+
+bottleneck_dim: 1024
+num_heads: 8
+ffn_dim: 1024
+num_layers: 8
+depthwise_conv_kernel_size: 32
+dropout: 0.1
+use_group_norm: True
+convolution_first: True
+mask_nonlinear: !name:torch.nn.functional.relu
+
+MaskNet: !new:src.conformer.MaskNet
+    input_dim: !ref  <N_encoder_out>
+    bottleneck_dim: !ref  <bottleneck_dim>
+    num_heads: !ref  <num_heads>
+    ffn_dim: !ref  <ffn_dim>
+    num_layers: !ref  <num_layers>
+    depthwise_conv_kernel_size: !ref  <depthwise_conv_kernel_size>
+    dropout: !ref  <dropout>
+    use_group_norm: !ref  <use_group_norm>
+    convolution_first: !ref  <convolution_first>
+    num_sources: !ref <num_spks>
+    mask_nonlinear: !ref  <mask_nonlinear>
+    subsampling_layers: 1
+
+Decoder: !new:speechbrain.lobes.models.dual_path.Decoder
+    in_channels: !ref <N_encoder_out>
+    out_channels: 1
+    kernel_size: !ref <kernel_size>
+    stride: !ref <kernel_stride>
+    bias: False
+
+optimizer: !name:torch.optim.Adam
+    lr: !ref <lr>
+    weight_decay: 0
+
+loss: !name:speechbrain.nnet.losses.get_si_snr_with_pitwrapper
+
+lr_scheduler: !new:speechbrain.nnet.schedulers.ReduceLROnPlateau
+    factor: 0.5
+    patience: 3
+    dont_halve_until_epoch: 90
+
+epoch_counter: !new:speechbrain.utils.epoch_loop.EpochCounter
+    limit: !ref <N_epochs>
+
+modules:
+    encoder: !ref <Encoder>
+    decoder: !ref <Decoder>
+    masknet: !ref <MaskNet>
+
+checkpointer: !new:speechbrain.utils.checkpoints.Checkpointer
+    checkpoints_dir: !ref <save_folder>
+    recoverables:
+        encoder: !ref <Encoder>
+        decoder: !ref <Decoder>
+        masknet: !ref <MaskNet>
+        counter: !ref <epoch_counter>
+        lr_scheduler: !ref <lr_scheduler>
+
+train_logger: !new:speechbrain.utils.train_logger.FileTrainLogger
+    save_file: !ref <train_log>

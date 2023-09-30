@@ -1,16 +1,16 @@
+"""
+Conformer model from "Conformer: Convolution-augmented Transformer for Speech Recognition"
+Much of the code is copied from PyTorch implementation to change the padding behaviour: https://pytorch.org/audio/main/generated/torchaudio.models.Conformer.html
+Licence: https://github.com/pytorch/pytorch/blob/master/LICENSE
+"""
+
 import torch
 from torch import nn
 # from flash_attn.flash_attention import FlashMHA
 
 from typing import Callable
-
 from typing import Optional, Tuple
 
-"""
-Conformer model from "Conformer: Convolution-augmented Transformer for Speech Recognition"
-Much of the code is copied from PyTorch implementation to fix a padding issue: https://pytorch.org/audio/main/generated/torchaudio.models.Conformer.html
-Licence: https://github.com/pytorch/pytorch/blob/master/LICENSE
-"""
 __all__ = ["Conformer"]
 
 def _lengths_to_padding_mask(lengths: torch.Tensor) -> torch.Tensor:
@@ -158,6 +158,8 @@ class ConformerLayer(torch.nn.Module):
         self.self_attn_layer_norm = torch.nn.LayerNorm(input_dim)
         if not use_flash:
             self.self_attn = torch.nn.MultiheadAttention(input_dim, num_attention_heads, dropout=dropout)
+        else:
+            raise ValueError("FlashMHA not implemented yet, set use_flash=False for now (default)")
         # else:
         #     self.self_attn = FlashMHA(input_dim, num_attention_heads, attention_dropout=dropout)
 
@@ -196,13 +198,10 @@ class ConformerLayer(torch.nn.Module):
         residual = input
         x = self.ffn1(input)
         x = x * 0.5 + residual
-        # print(x)
         if self.convolution_first:
             x = self._apply_convolution(x)
-        # print(x)
         residual = x
         x = self.self_attn_layer_norm(x)
-        # print(x)
         x, _ = self.self_attn(
             query=x,
             key=x,
@@ -382,6 +381,24 @@ class SuperSamplingLayers(nn.Module):
         return x
 
 class MaskNet(Conformer):
+    """
+    Conformer based MaskNet class for use SpeechBrain separation recipe
+    Args:
+        input_dim (int): input dimension.
+        bottleneck_dim (int): bottleneck dimension.
+        num_heads (int): number of attention heads in each Conformer layer.
+        ffn_dim (int): hidden layer dimension of feedforward networks.
+        num_layers (int): number of Conformer layers to instantiate.
+        depthwise_conv_kernel_size (int): kernel size of each Conformer layer's depthwise convolution layer.
+        dropout (float, optional): dropout probability. (Default: 0.0)
+        use_group_norm (bool, optional): use ``GroupNorm`` rather than ``BatchNorm1d``
+            in the convolution module. (Default: ``False``)
+        convolution_first (bool, optional): apply the convolution module ahead of
+            the attention module. (Default: ``False``)
+        num_sources (int, optional): number of sources to estimate (Default: 2)
+        mask_nonlinear (Callable, optional): nonlinearity to apply to mask output (Default: nn.functional.relu)
+        subsampling_layers (int, optional): number of subsampling layers (Default: 2)
+    """
     def __init__(self,
         input_dim: int,
         bottleneck_dim: int,
@@ -413,6 +430,13 @@ class MaskNet(Conformer):
         self.num_sources = num_sources
     
     def forward(self, x: torch.Tensor, lens: torch.Tensor=None) -> torch.Tensor:
+        """
+        Args:
+            x (torch.Tensor): input tensor of shape [batch_size, input_dim, length]
+            lens (torch.Tensor): lengths tensor of shape [batch_size]
+        Returns:
+            torch.Tensor: output tensor of shape [num_sources, batch_size, input_dim, length]
+        """
         bs, ch, l  = x.shape
         x = self.bottleneck(x)
         x, sub_res = self.subsampling(x)

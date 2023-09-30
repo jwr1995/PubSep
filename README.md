@@ -13,10 +13,10 @@ This recipe is a fork of the WHAMandWHAMR recipe in the SpeechBrain library (req
 Data:
  * WHAMR
  * WSJ0-2Mix
- * LibriMix (WIP)
+ * LibriMix [WIP]
 
 Models:
- * Time-Domain Conformers (TD-Conformer) (WIP)
+ * Time-Domain Conformers (TD-Conformer) [WIP]
  * Deformable Temporal Convolutional Networks (DTCN)
  * Temporal Convolutional Networks (Conv-TasNet without skip connections)
 

@@ -4,7 +4,7 @@ NOTE: This repository is still under construction and may contain major bugs
 
 This repository provides training and evalution scripts for the DNN speech separation models described in various papers 
  * "Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation" - https://arxiv.org/pdf/2210.15305.pdf.
- * "On Time-Domain Conformer Models for Noisy Reverberant Speech Separation" - [Link to be added]
+ * "On Time-Domain Conformer Models for Noisy Reverberant Speech Separation" - https://arxiv.org/pdf/2310.06125.pdf
 
 As baseline TCN schema is also provided along with tools for estimating computational efficiency.
 

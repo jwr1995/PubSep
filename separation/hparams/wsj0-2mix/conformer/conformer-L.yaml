@@ -15,7 +15,7 @@ __set_seed: !apply:torch.manual_seed [!ref <seed>]
 # the data folder for the wham dataset
 # data_folder needs to follow the format:  /yourpath/whamr.
 # make sure to use the name whamr at your top folder for the dataset!
-data_folder: /fastdata/acp19jwr/data/whamr
+data_folder: /fastdata/acp19jwr/data/wsj0-2mix
 alternate_path: !ref <data_folder>
 mix_folder: mix_both_reverb
 mini: False # if true only uses a quarter of the wham/whamr data
@@ -28,16 +28,16 @@ mini: False # if true only uses a quarter of the wham/whamr data
 # you can do this conversion with the script ../meta/preprocess_dynamic_mixing.py
 base_folder_dm: /fastdata/acp19jwr/data/wsj0/si_tr_s_processed
 
-experiment_name: !ref ks=<depthwise_conv_kernel_size>/dropout=<dropout>/conformer-XXL
-experiment_folder: conformer/S=1/dm
+experiment_name: !ref conformer-L
+experiment_folder: wsj0-2mix/conformer
 output_folder: !ref results/<experiment_folder>/<experiment_name>/<seed>
 train_log: !ref <output_folder>/train_log.txt
 save_folder: !ref <output_folder>/save
 
 # the file names should start with whamr instead of whamorg
-train_data: !ref <save_folder>/whamr_tr.csv
-valid_data: !ref <save_folder>/whamr_cv.csv
-test_data: !ref <save_folder>/whamr_tt.csv
+train_data: !ref <save_folder>/wsj_tr.csv
+valid_data: !ref <save_folder>/wsj_cv.csv
+test_data: !ref <save_folder>/wsj_tt.csv
 skip_prep: False
 
 # Experiment params
@@ -45,13 +45,13 @@ auto_mix_prec: True # Set it to True for mixed precision
 test_only: False
 num_spks: 2 # set to 3 for wsj0-3mix
 progressbar: True
-save_audio: True # Save estimated sources on disk
+save_audio: False # Save estimated sources on disk
 sample_rate: 8000
 
 # Training parameters
 N_epochs: 200
 batch_size: 4
-lr: 0.000025
+lr: 0.00005
 clip_grad_norm: 5
 loss_upper_lim: 9999  # this is the upper limit for an acceptable loss
 # if True, the training sequences are cut to a specified length
@@ -61,17 +61,17 @@ limit_training_signal_len: True
 training_signal_len: !ref 4 * <sample_rate>
 
 # Set it to True to dynamically create mixtures at training time
-dynamic_mixing: True
+dynamic_mixing: False
 
 # Parameters for data augmentation
 
 # rir_path variable points to the directory of the room impulse responses
 # e.g. /miniscratch/subakany/rir_wavs
 # If the path does not exist, it is created automatically.
-rir_path: !ref <data_folder>/rirs/tr
+rir_path: !ref <data_folder>/rirs
 
 use_wavedrop: False
-use_speedperturb: True
+use_speedperturb: False
 use_speedperturb_sameforeachsource: False
 use_rand_shift: False
 min_shift: -8000
@@ -95,7 +95,7 @@ threshold_byloss: True
 threshold: -30
 
 # Encoder parameters
-N_encoder_out: 512
+N_encoder_out: 256
 kernel_size: 16
 kernel_stride: 8
 
@@ -113,11 +113,11 @@ Encoder: !new:speechbrain.lobes.models.dual_path.Encoder
     kernel_size: !ref <kernel_size>
     out_channels: !ref <N_encoder_out>
 
-bottleneck_dim: 2048
+bottleneck_dim: 512
 num_heads: 8
-ffn_dim: 2048
+ffn_dim: 512
 num_layers: 8
-depthwise_conv_kernel_size: 64
+depthwise_conv_kernel_size: 32
 dropout: 0.1
 use_group_norm: True
 convolution_first: True

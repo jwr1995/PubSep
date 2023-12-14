@@ -28,8 +28,8 @@ mini: False # if true only uses a quarter of the wham/whamr data
 # you can do this conversion with the script ../meta/preprocess_dynamic_mixing.py
 base_folder_dm: /fastdata/acp19jwr/data/wsj0/si_tr_s_processed
 
-experiment_name: !ref ks=<depthwise_conv_kernel_size>/conformer-XXL
-experiment_folder: wsj0-2mix/conformer/S=1
+experiment_name: !ref conformer-M
+experiment_folder: wsj0-2mix/conformer
 output_folder: !ref results/<experiment_folder>/<experiment_name>/<seed>
 train_log: !ref <output_folder>/train_log.txt
 save_folder: !ref <output_folder>/save
@@ -49,8 +49,8 @@ save_audio: False # Save estimated sources on disk
 sample_rate: 8000
 
 # Training parameters
-N_epochs: 150
-batch_size: 5
+N_epochs: 200
+batch_size: 4
 lr: 0.00005
 clip_grad_norm: 5
 loss_upper_lim: 9999  # this is the upper limit for an acceptable loss
@@ -58,7 +58,7 @@ loss_upper_lim: 9999  # this is the upper limit for an acceptable loss
 limit_training_signal_len: True
 # this is the length of sequences if we choose to limit
 # the signal length of training sequences
-training_signal_len: !ref 3.5 * <sample_rate>
+training_signal_len: !ref 4 * <sample_rate>
 
 # Set it to True to dynamically create mixtures at training time
 dynamic_mixing: False
@@ -95,7 +95,7 @@ threshold_byloss: True
 threshold: -30
 
 # Encoder parameters
-N_encoder_out: 512
+N_encoder_out: 256
 kernel_size: 16
 kernel_stride: 8
 
@@ -113,9 +113,9 @@ Encoder: !new:speechbrain.lobes.models.dual_path.Encoder
     kernel_size: !ref <kernel_size>
     out_channels: !ref <N_encoder_out>
 
-bottleneck_dim: 2048
+bottleneck_dim: 256
 num_heads: 8
-ffn_dim: 2048
+ffn_dim: 256
 num_layers: 8
 depthwise_conv_kernel_size: 32
 dropout: 0.1

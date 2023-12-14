@@ -26,8 +26,8 @@ mini: False # if true only uses a quarter of the wham/whamr data
 # you can do this conversion with the script ../meta/preprocess_dynamic_mixing.py
 base_folder_dm: /fastdata/acp19jwr/data/wsj0/si_tr_s_processed
 
-experiment_name: !ref ks=<depthwise_conv_kernel_size>/conformer-M
-experiment_folder: conformer/S=1/dm
+experiment_name: !ref conformer-M
+experiment_folder: conformer/dm
 output_folder: !ref results/<experiment_folder>/<experiment_name>/<seed>
 train_log: !ref <output_folder>/train_log.txt
 save_folder: !ref <output_folder>/save
@@ -114,7 +114,7 @@ bottleneck_dim: 256
 num_heads: 8
 ffn_dim: 256
 num_layers: 8
-depthwise_conv_kernel_size: 32
+depthwise_conv_kernel_size: 64
 dropout: 0.1
 use_group_norm: True
 convolution_first: True

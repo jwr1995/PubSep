@@ -10,9 +10,6 @@ from speechbrain.processing.signal_processing import overlap_and_add
 from speechbrain.lobes.models.conv_tasnet import GlobalLayerNorm, ChannelwiseLayerNorm, Chomp1d, choose_norm
 from speechbrain.nnet.CNN import Conv1d
 
-# from fast_transformers.attention import linear_attention, attention_layer
-# from fast_transformers.masking import FullMask, LengthMask
-
 from dc1d.nn import PackedDeformConv1d
 
 EPS = 1e-8
@@ -86,23 +83,6 @@ class DeformableTemporalBlocksSequential(sb.nnet.containers.Sequential):
                 self.R=R
                 break
             
-        
-    
-    # def get_output_shape(self):
-    #     """Returns expected shape of the output.
-
-    #     Computed by passing dummy input constructed with the
-    #     ``self.input_shape`` attribute.
-    #     """
-    #     self.store_intermediates = False
-    #     with torch.no_grad():
-    #         dummy_input = torch.zeros(self.input_shape)
-    #         dummy_output = self(dummy_input)
-    #     if isinstance(dummy_output,tuple):
-    #         return dummy_output[0].shape
-    #     else:
-    #         return dummy_output.shape
-        
     def set_store_intermediates(self, store_intermediates=True):
         self.store_intermediates = store_intermediates
         for layer in self.values():
@@ -110,17 +90,7 @@ class DeformableTemporalBlocksSequential(sb.nnet.containers.Sequential):
 
     def forward(self, x):
         i_dict = {}
-        # if not "shared_weights" in self.__dict__:
-        #     for name, layer in self.items():
-        #         if "store_intermediates" in self.__dict__.keys():
-        #             if self.store_intermediates:
-        #                 layer.set_store_intermediates(self.store_intermediates)
-        #                 x, intermediate = layer(x)
-        #                 i_dict[name] = intermediate
-        #         else:
-        #             x = layer(x)
-        #         if isinstance(x, tuple):
-        #             x = x[0]
+      
         if "R" in self.__dict__:
             repeat=self.R
         else:

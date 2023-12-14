@@ -28,8 +28,8 @@ mini: False # if true only uses a quarter of the wham/whamr data
 # you can do this conversion with the script ../meta/preprocess_dynamic_mixing.py
 base_folder_dm: /fastdata/acp19jwr/data/wsj0/si_tr_s_processed
 
-experiment_name: !ref ks=<depthwise_conv_kernel_size>/conformer-M
-experiment_folder: wsj0-2mix/conformer/S=1/dm
+experiment_name: !ref conformer-S
+experiment_folder: wsj0-2mix/conformer/dm
 output_folder: !ref results/<experiment_folder>/<experiment_name>/<seed>
 train_log: !ref <output_folder>/train_log.txt
 save_folder: !ref <output_folder>/save
@@ -114,9 +114,9 @@ Encoder: !new:speechbrain.lobes.models.dual_path.Encoder
     kernel_size: !ref <kernel_size>
     out_channels: !ref <N_encoder_out>
 
-bottleneck_dim: 256
+bottleneck_dim: 128
 num_heads: 8
-ffn_dim: 256
+ffn_dim: 128
 num_layers: 8
 depthwise_conv_kernel_size: 32
 dropout: 0.1

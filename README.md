@@ -2,10 +2,11 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/on-time-domain-conformer-models-for-monaural/speech-separation-on-whamr)](https://paperswithcode.com/sota/speech-separation-on-whamr?p=on-time-domain-conformer-models-for-monaural)
 
 This repository provides training and evalution scripts for the DNN speech separation models described in various papers 
- * "Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation" - https://arxiv.org/pdf/2210.15305.pdf.
+ * "Utterance Weighted Multi-Dilation Temporal Convolutional Networks for Monaural Speech Dereverberation" - https://ieeexplore.ieee.org/document/9914752
+ * "Deformable Temporal Convolutional Networks for Monaural Noisy Reverberant Speech Separation" - https://ieeexplore.ieee.org/document/10095230
  * "On Time Domain Conformer Models for Monaural Speech Separation in Noisy Reverberant Acoustic Environments" - https://arxiv.org/pdf/2310.06125.pdf
 
-As baseline TCN schema is also provided along with tools for estimating computational efficiency.
+A baseline TCN model (from SpeechBrain) is also provided along with tools for estimating computational efficiency.
 
 This recipe is a fork of the WHAMandWHAMR recipe in the SpeechBrain library (required, see below). For more help and information on any SpeechBrain related issues:
  * https://speechbrain.github.io/
@@ -18,8 +19,9 @@ Data:
  * LibriMix [WIP]
 
 Models:
- * Time-Domain Conformers (TD-Conformer) [WIP]
+ * Time-Domain Conformers (TD-Conformer)
  * Deformable Temporal Convolutional Networks (DTCN)
+ * Utterance-Weighted Multi-Dilation Temporal Convolutional Network (WD-TCN)
  * Temporal Convolutional Networks (Conv-TasNet without skip connections)
 
 # Running basic script
@@ -68,4 +70,14 @@ Please cite the following papers if you make use of the respective part of this 
   number={},
   pages={1-5},
   doi={10.1109/ICASSP49357.2023.10095230}}
+
+@INPROCEEDINGS{wdtcn22,
+  author={Ravenscroft, William and Goetze, Stefan and Hain, Thomas},
+  booktitle={2022 International Workshop on Acoustic Signal Enhancement (IWAENC)}, 
+  title={Utterance Weighted Multi-Dilation Temporal Convolutional Networks for Monaural Speech Dereverberation}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={1-5},
+  doi={10.1109/IWAENC53105.2022.9914752}}
 ```

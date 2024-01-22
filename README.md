@@ -53,7 +53,7 @@ In order to use dynamic mixing you will also need to change the ```base_folder_d
 # Paper
 Please cite the following papers if you make use of the respective part of this codebase:
 ```
-@INPROCEEDINGS{10389669,
+@INPROCEEDINGS{tdconformer23,
   author={Ravenscroft, William and Goetze, Stefan and Hain, Thomas},
   booktitle={2023 IEEE Automatic Speech Recognition and Understanding Workshop (ASRU)}, 
   title={On Time Domain Conformer Models for Monaural Speech Separation in Noisy Reverberant Acoustic Environments}, 
